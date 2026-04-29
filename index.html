@@ -1,0 +1,1115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EYARCH — New Media Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0a0a0a;
+      --text: #f0ede8;
+      --text-dim: rgba(240,237,232,0.45);
+      --text-mid: rgba(240,237,232,0.7);
+      --accent: #00c8ff;
+      --border: rgba(240,237,232,0.1);
+      --gap: 3px;
+      --font-display: 'Cormorant Garamond', Georgia, serif;
+      --font-body: 'Inter', 'Helvetica Neue', sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      font-weight: 300;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── NAV ─────────────────────────────────────────────────── */
+    nav {
+      position: fixed;
+      inset: 0 0 auto;
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 28px 60px;
+      transition: background 0.5s, backdrop-filter 0.5s, border-color 0.5s;
+      border-bottom: 1px solid transparent;
+    }
+
+    nav.scrolled {
+      background: rgba(10,10,10,0.88);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom-color: var(--border);
+    }
+
+    .nav-logo {
+      font-family: var(--font-display);
+      font-size: 1.3rem;
+      font-weight: 400;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--text);
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 42px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-size: 0.68rem;
+      font-weight: 400;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    .nav-links a:hover { color: var(--text); }
+
+    /* ── HERO ────────────────────────────────────────────────── */
+    .hero {
+      position: relative;
+      width: 100vw;
+      height: 100svh; /* svh: excludes mobile browser chrome */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    #hero-landscape,
+    #hero-portrait {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 0;
+    }
+
+    /* CSS-driven orientation swap — no JS needed */
+    @media (orientation: landscape) {
+      #hero-landscape { display: block; }
+      #hero-portrait  { display: none;  }
+    }
+
+    @media (orientation: portrait) {
+      #hero-landscape { display: none;  }
+      #hero-portrait  { display: block; }
+    }
+
+    /* Animated fallback when no video source */
+    .hero-fallback {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      background: linear-gradient(135deg, #060609 0%, #0a0c18 30%, #060812 60%, #0a070f 100%);
+      background-size: 300% 300%;
+      animation: heroBg 25s ease infinite alternate;
+    }
+
+    @keyframes heroBg {
+      0%   { background-position: 0% 0%; }
+      33%  { background-position: 100% 0%; }
+      66%  { background-position: 50% 100%; }
+      100% { background-position: 100% 100%; }
+    }
+
+    .hero-vignette {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      background: radial-gradient(ellipse at center, transparent 25%, rgba(0,0,0,0.65) 100%);
+      pointer-events: none;
+    }
+
+    .hero-noise {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      opacity: 0.25;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+      pointer-events: none;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      opacity: 0;
+    }
+
+    .hero-eyebrow {
+      font-size: 0.64rem;
+      font-weight: 400;
+      letter-spacing: 0.4em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 28px;
+      display: block;
+    }
+
+    .hero-title {
+      font-family: var(--font-display);
+      font-size: clamp(5.5rem, 13vw, 12rem);
+      font-weight: 300;
+      line-height: 0.92;
+      letter-spacing: -0.02em;
+      color: var(--text);
+    }
+
+    .hero-title em { font-style: italic; }
+
+    .hero-tagline {
+      font-size: 0.72rem;
+      font-weight: 300;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-top: 30px;
+    }
+
+    .scroll-indicator {
+      position: absolute;
+      bottom: 44px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      opacity: 0;
+    }
+
+    .scroll-indicator span {
+      font-size: 0.58rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+
+    .scroll-line {
+      width: 1px;
+      height: 56px;
+      background: rgba(240,237,232,0.15);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .scroll-line::after {
+      content: '';
+      position: absolute;
+      top: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(to bottom, transparent, var(--accent));
+      animation: scrollPulse 2.2s ease-in-out infinite;
+    }
+
+    @keyframes scrollPulse {
+      0%   { top: -100%; opacity: 0; }
+      20%  { opacity: 1; }
+      100% { top: 200%; opacity: 0; }
+    }
+
+    /* ── CLIENTS MARQUEE ─────────────────────────────────────── */
+    .clients {
+      padding: 52px 0;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      overflow: hidden;
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    .clients-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .clients-header p {
+      font-size: 0.64rem;
+      font-weight: 400;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+
+    .marquee-outer {
+      overflow: hidden;
+      display: flex;
+    }
+
+    .marquee-track {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      white-space: nowrap;
+      animation: marquee 36s linear infinite;
+      will-change: transform;
+    }
+
+    @keyframes marquee {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+
+    .client-item {
+      display: inline-flex;
+      align-items: center;
+      padding: 0 48px;
+      opacity: 0.35;
+      transition: opacity 0.3s;
+      cursor: default;
+    }
+
+    .client-item:hover { opacity: 0.85; }
+
+    .client-name {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      font-weight: 400;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text);
+    }
+
+    .client-sep {
+      display: inline-block;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--text-dim);
+      margin: 0 48px;
+    }
+
+    /* ── SERVICE SECTIONS ────────────────────────────────────── */
+    .service-section {
+      padding: 100px 60px;
+      border-top: 1px solid var(--border);
+    }
+
+    .section-header { margin-bottom: 28px; }
+
+    .section-label {
+      display: block;
+      font-size: 0.62rem;
+      font-weight: 400;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 14px;
+      opacity: 0;
+      transform: translateY(16px);
+    }
+
+    .section-title {
+      font-family: var(--font-display);
+      font-size: clamp(2.8rem, 5.5vw, 5.5rem);
+      font-weight: 300;
+      letter-spacing: -0.025em;
+      line-height: 0.97;
+      color: var(--text);
+      margin-bottom: 22px;
+      opacity: 0;
+      transform: translateY(24px);
+    }
+
+    .section-rule {
+      height: 1px;
+      background: var(--border);
+      opacity: 0;
+    }
+
+    /* ── TILES GRID ──────────────────────────────────────────── */
+    /*
+      4-column base. Each row unit = half a column width so that:
+        square (span 2 rows) = 1:1
+        horizontal (span 2 rows, 2 cols) = 2:1
+        vertical (span 4 rows) = 1:2
+      Formula: row = (containerWidth - 3 gaps) / 4 cols / 2
+             = (100vw - 120px padding - 3×3px gap) / 8
+    */
+    .tiles-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-auto-rows: calc((100vw - 120px - 3 * var(--gap)) / 8);
+      grid-auto-flow: dense;
+      gap: var(--gap);
+      margin-top: 28px;
+    }
+
+    .tile      { grid-column: span 1; grid-row: span 2; aspect-ratio: 1 / 1; }
+    .tile.w2   { grid-column: span 2; grid-row: span 2; aspect-ratio: 2 / 1; }
+    .tile.w3   { grid-column: span 4; grid-row: span 2; aspect-ratio: 4 / 1; }
+    .tile.tall { grid-column: span 1; grid-row: span 4; aspect-ratio: 1 / 2; }
+
+    .tile-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .tile-bg {
+      position: absolute;
+      inset: 0;
+      background-size: 200% 200%;
+      transition: transform 0.7s cubic-bezier(0.16,1,0.3,1), filter 0.5s;
+    }
+
+    /* Unique cinematic placeholder gradients */
+    .c1 .tile-bg { background: linear-gradient(145deg,#06060e 0%,#0d0b1a 50%,#060a12 100%); animation: p1 14s ease infinite alternate; }
+    .c2 .tile-bg { background: linear-gradient(220deg,#080608 0%,#0f0812 50%,#060408 100%); animation: p2 17s ease infinite alternate; }
+    .c3 .tile-bg { background: linear-gradient(60deg, #040808 0%,#081410 50%,#060c0a 100%); animation: p3 12s ease infinite alternate; }
+    .c4 .tile-bg { background: linear-gradient(300deg,#0a0806 0%,#120e08 50%,#0a0a06 100%); animation: p4 19s ease infinite alternate; }
+    .c5 .tile-bg { background: linear-gradient(170deg,#040610 0%,#080c1c 50%,#04060e 100%); animation: p5 15s ease infinite alternate; }
+    .c6 .tile-bg { background: linear-gradient(80deg, #060606 0%,#0c0a14 50%,#080610 100%); animation: p6 11s ease infinite alternate; }
+    .c7 .tile-bg { background: linear-gradient(340deg,#040a08 0%,#081614 50%,#040c0a 100%); animation: p7 18s ease infinite alternate; }
+    .c8 .tile-bg { background: linear-gradient(200deg,#0a0608 0%,#140a0c 50%,#0a0608 100%); animation: p8 13s ease infinite alternate; }
+
+    @keyframes p1 { to { filter: brightness(1.8) saturate(2.5) hue-rotate(20deg); background-position: 100% 100%; } }
+    @keyframes p2 { to { filter: brightness(1.6) saturate(3) hue-rotate(-15deg); background-position: 100% 0%; } }
+    @keyframes p3 { to { filter: brightness(2) saturate(2) hue-rotate(40deg); background-position: 0% 100%; } }
+    @keyframes p4 { to { filter: brightness(1.7) saturate(2.8) hue-rotate(-30deg); background-position: 100% 50%; } }
+    @keyframes p5 { to { filter: brightness(1.9) saturate(3.5) hue-rotate(25deg); background-position: 50% 100%; } }
+    @keyframes p6 { to { filter: brightness(1.65) saturate(2) hue-rotate(-20deg); background-position: 100% 100%; } }
+    @keyframes p7 { to { filter: brightness(2.1) saturate(2.5) hue-rotate(55deg); background-position: 0% 0%; } }
+    @keyframes p8 { to { filter: brightness(1.75) saturate(3) hue-rotate(-45deg); background-position: 100% 0%; } }
+
+    /* Scanline texture */
+    .tile-inner::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.04) 2px, rgba(0,0,0,0.04) 4px);
+      pointer-events: none;
+    }
+
+    .tile-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      background: linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.2) 45%, transparent 70%);
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 18px 20px 20px;
+    }
+
+    .tile-border {
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      border: 1px solid transparent;
+      transition: border-color 0.4s;
+      pointer-events: none;
+    }
+
+    .tile-name {
+      font-size: 0.7rem;
+      font-weight: 400;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text);
+      transform: translateY(8px);
+      transition: transform 0.4s ease;
+    }
+
+    .tile-meta {
+      font-family: var(--font-display);
+      font-size: 0.88rem;
+      font-style: italic;
+      color: var(--text-dim);
+      margin-top: 3px;
+      transform: translateY(8px);
+      transition: transform 0.4s ease 0.04s;
+    }
+
+    .tile-inner:hover .tile-bg       { transform: scale(1.04); }
+    .tile-inner:hover .tile-overlay  { opacity: 1; }
+    .tile-inner:hover .tile-border   { border-color: rgba(240,237,232,0.25); }
+    .tile-inner:hover .tile-name,
+    .tile-inner:hover .tile-meta     { transform: translateY(0); }
+
+    /* ── EDITORIAL ───────────────────────────────────────────── */
+    .editorial {
+      padding: 150px 60px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 120px;
+      align-items: center;
+      position: relative;
+      border-top: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    .editorial::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      background: radial-gradient(ellipse at 15% 60%, rgba(0,200,255,0.035) 0%, transparent 55%);
+      pointer-events: none;
+    }
+
+    .editorial-left, .editorial-right { position: relative; z-index: 1; }
+
+    .editorial-statement {
+      font-family: var(--font-display);
+      font-size: clamp(3rem, 5.5vw, 5.5rem);
+      font-weight: 300;
+      line-height: 1.08;
+      letter-spacing: -0.025em;
+      color: var(--text);
+      opacity: 0;
+      transform: translateY(32px);
+    }
+
+    .editorial-statement em { font-style: italic; }
+
+    .editorial-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 14px;
+      font-size: 0.68rem;
+      font-weight: 400;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text-mid);
+      text-decoration: none;
+      margin-top: 40px;
+      padding-bottom: 5px;
+      border-bottom: 1px solid var(--border);
+      transition: color 0.3s, border-color 0.3s;
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    .editorial-link:hover { color: var(--text); border-bottom-color: var(--text-mid); }
+    .editorial-link svg   { transition: transform 0.3s; }
+    .editorial-link:hover svg { transform: translateX(5px); }
+
+    .editorial-body {
+      opacity: 0;
+      transform: translateY(24px);
+    }
+
+    .editorial-body p {
+      font-size: 0.86rem;
+      font-weight: 300;
+      line-height: 1.85;
+      color: var(--text-dim);
+      margin-bottom: 22px;
+    }
+    .editorial-body p:last-child { margin-bottom: 0; }
+
+    /* ── CTA ─────────────────────────────────────────────────── */
+    .cta {
+      position: relative;
+      padding: 170px 60px;
+      text-align: center;
+      border-top: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    .cta::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      background:
+        radial-gradient(ellipse at 50% 50%, rgba(0,200,255,0.05) 0%, transparent 65%),
+        radial-gradient(ellipse at 0% 100%, rgba(0,200,255,0.025) 0%, transparent 45%),
+        radial-gradient(ellipse at 100% 0%, rgba(0,200,255,0.025) 0%, transparent 45%);
+      animation: ctaGlow 18s ease infinite alternate;
+    }
+
+    @keyframes ctaGlow {
+      from { opacity: 0.5; }
+      to   { opacity: 1; }
+    }
+
+    .cta-inner {
+      position: relative;
+      z-index: 1;
+    }
+
+    .cta-label {
+      display: block;
+      font-size: 0.62rem;
+      font-weight: 400;
+      letter-spacing: 0.4em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 36px;
+      opacity: 0;
+      transform: translateY(16px);
+    }
+
+    .cta-headline {
+      font-family: var(--font-display);
+      font-size: clamp(3.2rem, 9vw, 8rem);
+      font-weight: 300;
+      line-height: 0.94;
+      letter-spacing: -0.03em;
+      color: var(--text);
+      margin-bottom: 60px;
+      opacity: 0;
+      transform: translateY(32px);
+    }
+    .cta-headline em { font-style: italic; }
+
+    .cta-buttons {
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    .btn {
+      font-family: var(--font-body);
+      font-size: 0.68rem;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      padding: 16px 38px;
+      text-decoration: none;
+      cursor: pointer;
+      transition: background 0.35s, color 0.35s, border-color 0.35s;
+      display: inline-block;
+    }
+
+    .btn-primary {
+      background: var(--text);
+      color: #0a0a0a;
+      border: 1px solid var(--text);
+    }
+    .btn-primary:hover {
+      background: transparent;
+      color: var(--text);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid rgba(240,237,232,0.28);
+    }
+    .btn-ghost:hover { border-color: var(--text); }
+
+    /* ── FOOTER ──────────────────────────────────────────────── */
+    footer {
+      padding: 80px 60px 0;
+      border-top: 1px solid var(--border);
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr 1fr;
+      gap: 60px;
+      padding-bottom: 64px;
+    }
+
+    .footer-brand-name {
+      font-family: var(--font-display);
+      font-size: 1.35rem;
+      font-weight: 400;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text);
+      margin-bottom: 10px;
+    }
+
+    .footer-tagline {
+      font-size: 0.73rem;
+      font-weight: 300;
+      color: var(--text-dim);
+      letter-spacing: 0.06em;
+    }
+
+    .footer-col-title {
+      font-size: 0.6rem;
+      font-weight: 400;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 22px;
+      display: block;
+    }
+
+    .footer-nav {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .footer-nav a {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      font-weight: 300;
+      color: var(--text-dim);
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    .footer-nav a:hover { color: var(--text); }
+
+    .footer-social {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 18px;
+      margin-bottom: 22px;
+    }
+
+    .footer-social a {
+      font-size: 0.62rem;
+      font-weight: 400;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    .footer-social a:hover { color: var(--accent); }
+
+    .footer-email {
+      font-family: var(--font-display);
+      font-size: 0.95rem;
+      font-style: italic;
+      color: var(--text-dim);
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    .footer-email:hover { color: var(--text); }
+
+    .footer-bottom {
+      border-top: 1px solid var(--border);
+      padding: 20px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .footer-bottom span {
+      font-size: 0.66rem;
+      font-weight: 300;
+      color: var(--text-dim);
+      letter-spacing: 0.06em;
+    }
+
+    /* ── RESPONSIVE ──────────────────────────────────────────── */
+    @media (max-width: 900px) {
+      nav { padding: 20px 28px; }
+      .nav-links { display: none; }
+
+      .service-section { padding: 64px 24px; }
+
+      /*
+        2-column mobile grid.
+        Row = (100vw - 48px padding - 1 gap) / 2 cols / 2
+              = (100vw - 51px) / 4
+      */
+      .tiles-grid {
+        grid-template-columns: repeat(2, 1fr);
+        grid-auto-rows: calc((100vw - 51px) / 4);
+      }
+
+      /* Square: 1 col × 2 rows → 1:1 */
+      .tile      { grid-column: span 1; grid-row: span 2; }
+
+      /* Horizontal: 2 cols × 2 rows → 2:1 */
+      .tile.w2,
+      .tile.w3   { grid-column: span 2; grid-row: span 2; }
+
+      /* Vertical: 1 col × 4 rows → 1:2 */
+      .tile.tall { grid-column: span 1; grid-row: span 4; }
+
+      .editorial {
+        grid-template-columns: 1fr;
+        gap: 52px;
+        padding: 80px 24px;
+      }
+
+      .cta { padding: 100px 24px; }
+
+      footer { padding: 56px 24px 0; }
+      .footer-grid { grid-template-columns: 1fr; gap: 44px; }
+    }
+
+    @media (max-width: 480px) {
+      .cta-buttons { flex-direction: column; align-items: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── NAV ────────────────────────────────────────────────────── -->
+<nav id="nav">
+  <a href="#" class="nav-logo">Eyarch</a>
+  <ul class="nav-links">
+    <li><a href="#work">Work</a></li>
+    <li><a href="#services">Services</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- ── HERO ───────────────────────────────────────────────────── -->
+<section class="hero" id="hero">
+  <!-- 16:9 — shown in landscape orientation -->
+  <video id="hero-landscape" autoplay muted loop playsinline preload="auto">
+    <source src="hero-landscape.mp4" type="video/mp4">
+  </video>
+  <!-- 9:16 — shown in portrait orientation -->
+  <video id="hero-portrait" autoplay muted loop playsinline preload="auto">
+    <source src="hero-portrait.mp4" type="video/mp4">
+  </video>
+  <div class="hero-fallback"></div>
+  <div class="hero-vignette"></div>
+  <div class="hero-noise"></div>
+
+  <div class="hero-content" id="heroContent">
+    <span class="hero-eyebrow">New Media Studio</span>
+    <h1 class="hero-title">Eye<em>arch</em></h1>
+    <p class="hero-tagline">Where vision meets the edge of what's possible</p>
+  </div>
+
+  <div class="scroll-indicator" id="scrollIndicator">
+    <span>Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- ── CLIENTS ─────────────────────────────────────────────────── -->
+<section class="clients" id="clients">
+  <div class="clients-header">
+    <p>Trusted by the ones who shape culture</p>
+  </div>
+  <div class="marquee-outer">
+    <div class="marquee-track" id="marqueeTrack">
+      <!-- First set -->
+      <span class="client-item"><span class="client-name">Nike</span></span>
+      <span class="client-sep"></span>
+      <span class="client-item"><span class="client-name">Dior</span></span>
+      <span class="client-sep"></span>
+      <span class="client-item"><span class="client-name">Apple</span></span>
+      <span class="client-sep"></span>
+      <span class="client-item"><span class="client-name">Balenciaga</span></span>
+      <span class="client-sep"></span>
+      <span class="client-item"><span class="client-name">Spotify</span></span>
+      <span class="client-sep"></span>
+      <span class="client-item"><span class="client-name">Samsung</span></span>
+      <span class="client-sep"></span>
+      <span class="client-item"><span class="client-name">MoMA</span></span>
+      <span class="client-sep"></span>
+      <span class="client-item"><span class="client-name">Valentino</span></span>
+      <span class="client-sep"></span>
+      <span class="client-item"><span class="client-name">Meta</span></span>
+      <span class="client-sep"></span>
+      <span class="client-item"><span class="client-name">Prada</span></span>
+      <span class="client-sep"></span>
+      <span class="client-item"><span class="client-name">A24</span></span>
+      <span class="client-sep"></span>
+      <span class="client-item"><span class="client-name">Gucci</span></span>
+      <span class="client-sep"></span>
+      <!-- Duplicate set for seamless loop -->
+      <span class="client-item"><span class="client-name">Nike</span></span>
+      <span class="client-sep"></span>
+      <span class="client-item"><span class="client-name">Dior</span></span>
+      <span class="client-sep"></span>
+      <span class="client-item"><span class="client-name">Apple</span></span>
+      <span class="client-sep"></span>
+      <span class="client-item"><span class="client-name">Balenciaga</span></span>
+      <span class="client-sep"></span>
+      <span class="client-item"><span class="client-name">Spotify</span></span>
+      <span class="client-sep"></span>
+      <span class="client-item"><span class="client-name">Samsung</span></span>
+      <span class="client-sep"></span>
+      <span class="client-item"><span class="client-name">MoMA</span></span>
+      <span class="client-sep"></span>
+      <span class="client-item"><span class="client-name">Valentino</span></span>
+      <span class="client-sep"></span>
+      <span class="client-item"><span class="client-name">Meta</span></span>
+      <span class="client-sep"></span>
+      <span class="client-item"><span class="client-name">Prada</span></span>
+      <span class="client-sep"></span>
+      <span class="client-item"><span class="client-name">A24</span></span>
+      <span class="client-sep"></span>
+      <span class="client-item"><span class="client-name">Gucci</span></span>
+      <span class="client-sep"></span>
+    </div>
+  </div>
+</section>
+
+<!-- ── SERVICE 01: AI VIDEO ────────────────────────────────────── -->
+<section class="service-section" id="services">
+  <div class="section-header">
+    <span class="section-label">01</span>
+    <h2 class="section-title">AI Video Production</h2>
+    <div class="section-rule"></div>
+  </div>
+  <div class="tiles-grid" id="work">
+    <div class="tile w2 c1"><div class="tile-inner"><div class="tile-bg"></div><div class="tile-overlay"><span class="tile-name">Neural Visions — Loewe</span><span class="tile-meta">AI Campaign, 2024</span></div><div class="tile-border"></div></div></div>
+    <div class="tile c2"><div class="tile-inner"><div class="tile-bg"></div><div class="tile-overlay"><span class="tile-name">Sora Dreams</span><span class="tile-meta">AI Film, 2024</span></div><div class="tile-border"></div></div></div>
+    <div class="tile c3"><div class="tile-inner"><div class="tile-bg"></div><div class="tile-overlay"><span class="tile-name">Synthetic Light</span><span class="tile-meta">AI Short, 2023</span></div><div class="tile-border"></div></div></div>
+    <div class="tile c4"><div class="tile-inner"><div class="tile-bg"></div><div class="tile-overlay"><span class="tile-name">Diffusion State</span><span class="tile-meta">Music Video, 2024</span></div><div class="tile-border"></div></div></div>
+    <div class="tile w2 c5"><div class="tile-inner"><div class="tile-bg"></div><div class="tile-overlay"><span class="tile-name">Model Collapse — Acne Studios</span><span class="tile-meta">AI Campaign, 2024</span></div><div class="tile-border"></div></div></div>
+    <div class="tile c6"><div class="tile-inner"><div class="tile-bg"></div><div class="tile-overlay"><span class="tile-name">Latent Space</span><span class="tile-meta">AI Installation, 2023</span></div><div class="tile-border"></div></div></div>
+  </div>
+</section>
+
+<!-- ── SERVICE 02: VFX · CGI ───────────────────────────────────── -->
+<section class="service-section">
+  <div class="section-header">
+    <span class="section-label">02</span>
+    <h2 class="section-title">VFX · CGI Video Production</h2>
+    <div class="section-rule"></div>
+  </div>
+  <div class="tiles-grid">
+    <div class="tile c7"><div class="tile-inner"><div class="tile-bg"></div><div class="tile-overlay"><span class="tile-name">Fluid Dynamics — Nike</span><span class="tile-meta">VFX Campaign, 2024</span></div><div class="tile-border"></div></div></div>
+    <div class="tile tall c2"><div class="tile-inner"><div class="tile-bg"></div><div class="tile-overlay"><span class="tile-name">Crystalline</span><span class="tile-meta">CGI Film, 2024</span></div><div class="tile-border"></div></div></div>
+    <div class="tile c3"><div class="tile-inner"><div class="tile-bg"></div><div class="tile-overlay"><span class="tile-name">Gravity Wells</span><span class="tile-meta">VFX Short, 2023</span></div><div class="tile-border"></div></div></div>
+    <div class="tile c4"><div class="tile-inner"><div class="tile-bg"></div><div class="tile-overlay"><span class="tile-name">Chrome Bodies</span><span class="tile-meta">CGI, 2024</span></div><div class="tile-border"></div></div></div>
+    <div class="tile w2 c8"><div class="tile-inner"><div class="tile-bg"></div><div class="tile-overlay"><span class="tile-name">Phantom Matter — Samsung</span><span class="tile-meta">CGI Campaign, 2024</span></div><div class="tile-border"></div></div></div>
+    <div class="tile c5"><div class="tile-inner"><div class="tile-bg"></div><div class="tile-overlay"><span class="tile-name">Membrane</span><span class="tile-meta">VFX, 2023</span></div><div class="tile-border"></div></div></div>
+    <div class="tile c1"><div class="tile-inner"><div class="tile-bg"></div><div class="tile-overlay"><span class="tile-name">Parallax</span><span class="tile-meta">CGI Short, 2024</span></div><div class="tile-border"></div></div></div>
+  </div>
+</section>
+
+<!-- ── SERVICE 03: XR ──────────────────────────────────────────── -->
+<section class="service-section">
+  <div class="section-header">
+    <span class="section-label">03</span>
+    <h2 class="section-title">XR Projects &amp; Mobile Applications</h2>
+    <div class="section-rule"></div>
+  </div>
+  <div class="tiles-grid">
+    <div class="tile w2 c6"><div class="tile-inner"><div class="tile-bg"></div><div class="tile-overlay"><span class="tile-name">Void Walker — Meta Quest</span><span class="tile-meta">VR Experience, 2024</span></div><div class="tile-border"></div></div></div>
+    <div class="tile c7"><div class="tile-inner"><div class="tile-bg"></div><div class="tile-overlay"><span class="tile-name">Spatial UI</span><span class="tile-meta">AR App, 2024</span></div><div class="tile-border"></div></div></div>
+    <div class="tile c1"><div class="tile-inner"><div class="tile-bg"></div><div class="tile-overlay"><span class="tile-name">Presence</span><span class="tile-meta">XR Installation, 2023</span></div><div class="tile-border"></div></div></div>
+    <div class="tile tall c3"><div class="tile-inner"><div class="tile-bg"></div><div class="tile-overlay"><span class="tile-name">Layer Zero</span><span class="tile-meta">Mobile App, 2024</span></div><div class="tile-border"></div></div></div>
+    <div class="tile c2"><div class="tile-inner"><div class="tile-bg"></div><div class="tile-overlay"><span class="tile-name">Mirrorworld</span><span class="tile-meta">Spatial Computing, 2024</span></div><div class="tile-border"></div></div></div>
+    <div class="tile w2 c4"><div class="tile-inner"><div class="tile-bg"></div><div class="tile-overlay"><span class="tile-name">Threshold — Apple Vision Pro</span><span class="tile-meta">Spatial App, 2024</span></div><div class="tile-border"></div></div></div>
+  </div>
+</section>
+
+<!-- ── SERVICE 04: MEDIA ARTS ──────────────────────────────────── -->
+<section class="service-section">
+  <div class="section-header">
+    <span class="section-label">04</span>
+    <h2 class="section-title">Media Arts · Immersive Projects</h2>
+    <div class="section-rule"></div>
+  </div>
+  <div class="tiles-grid">
+    <div class="tile c5"><div class="tile-inner"><div class="tile-bg"></div><div class="tile-overlay"><span class="tile-name">Signal / Noise</span><span class="tile-meta">Installation, MoMA 2024</span></div><div class="tile-border"></div></div></div>
+    <div class="tile c6"><div class="tile-inner"><div class="tile-bg"></div><div class="tile-overlay"><span class="tile-name">Thermodynamics</span><span class="tile-meta">Generative Art, 2023</span></div><div class="tile-border"></div></div></div>
+    <div class="tile w2 c1"><div class="tile-inner"><div class="tile-bg"></div><div class="tile-overlay"><span class="tile-name">Entanglement — Venice Biennale</span><span class="tile-meta">Immersive, 2024</span></div><div class="tile-border"></div></div></div>
+    <div class="tile tall c2"><div class="tile-inner"><div class="tile-bg"></div><div class="tile-overlay"><span class="tile-name">Dark Matter</span><span class="tile-meta">Media Art, 2024</span></div><div class="tile-border"></div></div></div>
+    <div class="tile c3"><div class="tile-inner"><div class="tile-bg"></div><div class="tile-overlay"><span class="tile-name">Resonance</span><span class="tile-meta">Sound + Visual, 2023</span></div><div class="tile-border"></div></div></div>
+    <div class="tile c7"><div class="tile-inner"><div class="tile-bg"></div><div class="tile-overlay"><span class="tile-name">Echo Chamber</span><span class="tile-meta">Projection, 2024</span></div><div class="tile-border"></div></div></div>
+  </div>
+</section>
+
+<!-- ── SERVICE 05: BRANDING & UI ───────────────────────────────── -->
+<section class="service-section">
+  <div class="section-header">
+    <span class="section-label">05</span>
+    <h2 class="section-title">Branding &amp; UI</h2>
+    <div class="section-rule"></div>
+  </div>
+  <div class="tiles-grid">
+    <div class="tile w2 c8"><div class="tile-inner"><div class="tile-bg"></div><div class="tile-overlay"><span class="tile-name">Helvetica Nouveau — Agency Rebrand</span><span class="tile-meta">Identity System, 2024</span></div><div class="tile-border"></div></div></div>
+    <div class="tile c4"><div class="tile-inner"><div class="tile-bg"></div><div class="tile-overlay"><span class="tile-name">Zero State</span><span class="tile-meta">UI Design, 2024</span></div><div class="tile-border"></div></div></div>
+    <div class="tile tall c5"><div class="tile-inner"><div class="tile-bg"></div><div class="tile-overlay"><span class="tile-name">Monolith</span><span class="tile-meta">Brand System, 2024</span></div><div class="tile-border"></div></div></div>
+    <div class="tile c6"><div class="tile-inner"><div class="tile-bg"></div><div class="tile-overlay"><span class="tile-name">Type Study</span><span class="tile-meta">Typography, 2023</span></div><div class="tile-border"></div></div></div>
+    <div class="tile c1"><div class="tile-inner"><div class="tile-bg"></div><div class="tile-overlay"><span class="tile-name">Negative Space</span><span class="tile-meta">Identity, 2023</span></div><div class="tile-border"></div></div></div>
+    <div class="tile w2 c2"><div class="tile-inner"><div class="tile-bg"></div><div class="tile-overlay"><span class="tile-name">Frequency — Spotify Design</span><span class="tile-meta">Brand + UI, 2024</span></div><div class="tile-border"></div></div></div>
+    <div class="tile c7"><div class="tile-inner"><div class="tile-bg"></div><div class="tile-overlay"><span class="tile-name">Obsidian</span><span class="tile-meta">Brand Identity, 2024</span></div><div class="tile-border"></div></div></div>
+  </div>
+</section>
+
+<!-- ── EDITORIAL ───────────────────────────────────────────────── -->
+<section class="editorial" id="about">
+  <div class="editorial-left">
+    <h2 class="editorial-statement">
+      We build<br><em>culture</em><br>at the edge<br>of the possible.
+    </h2>
+    <a href="#contact" class="editorial-link">
+      Our approach
+      <svg width="22" height="9" viewBox="0 0 22 9" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0 4.5H20M16 1.5L20 4.5L16 7.5" stroke="currentColor" stroke-width="0.75"/>
+      </svg>
+    </a>
+  </div>
+  <div class="editorial-right">
+    <div class="editorial-body">
+      <p>Eyarch is a new media studio operating at the intersection of technology, art, and commerce. We work with forward-thinking brands and cultural institutions to produce work that doesn't just look good — it changes how audiences experience the world.</p>
+      <p>Our practice spans AI-generated cinema, immersive environments, interactive experiences, and spatial computing. Every project begins with a single question: what hasn't been seen before?</p>
+      <p>We are not a production house. We are not a design agency. We are a studio of obsessives — directors, engineers, artists, and strategists — who believe that the best work lives precisely where disciplines dissolve.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── CTA ─────────────────────────────────────────────────────── -->
+<section class="cta" id="contact">
+  <div class="cta-inner">
+    <span class="cta-label">Ready when you are</span>
+    <h2 class="cta-headline">Let's make something<br><em>unforgettable.</em></h2>
+    <div class="cta-buttons">
+      <a href="mailto:hello@eyarch.studio" class="btn btn-primary">Start a Project</a>
+      <a href="#hero" class="btn btn-ghost">View Full Showreel</a>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ──────────────────────────────────────────────────── -->
+<footer>
+  <div class="footer-grid">
+    <div>
+      <div class="footer-brand-name">Eyarch</div>
+      <div class="footer-tagline">New Media Studio — Est. 2019</div>
+    </div>
+    <div>
+      <span class="footer-col-title">Navigation</span>
+      <ul class="footer-nav">
+        <li><a href="#services">Services</a></li>
+        <li><a href="#work">Work</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </div>
+    <div>
+      <span class="footer-col-title">Connect</span>
+      <div class="footer-social">
+        <a href="#">Instagram</a>
+        <a href="#">Vimeo</a>
+        <a href="#">LinkedIn</a>
+        <a href="#">Behance</a>
+      </div>
+      <a href="mailto:hello@eyarch.studio" class="footer-email">hello@eyarch.studio</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>&copy; 2024 Eyarch Studio. All rights reserved.</span>
+    <span>Made with intention.</span>
+  </div>
+</footer>
+
+<script>
+  gsap.registerPlugin(ScrollTrigger);
+
+  /* ── Hero entrance ──────────────────────────────────────── */
+  window.addEventListener('load', () => {
+    const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+    tl.to('#heroContent', { opacity: 1, duration: 2, delay: 0.2 })
+      .to('#scrollIndicator', { opacity: 1, duration: 1.2 }, '-=1');
+  });
+
+  /* ── Nav scroll state ───────────────────────────────────── */
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 60);
+  }, { passive: true });
+
+  /* ── Clients strip fade in ──────────────────────────────── */
+  ScrollTrigger.create({
+    trigger: '#clients',
+    start: 'top 88%',
+    onEnter: () => gsap.to('#clients', { opacity: 1, y: 0, duration: 1, ease: 'power3.out' })
+  });
+
+  /* ── Section header elements (label, title, rule) ───────── */
+  gsap.utils.toArray('.section-label').forEach(el => {
+    gsap.to(el, {
+      opacity: 1, y: 0, duration: 0.8, ease: 'power3.out',
+      scrollTrigger: { trigger: el, start: 'top 88%', toggleActions: 'play none none none' }
+    });
+  });
+
+  gsap.utils.toArray('.section-title').forEach(el => {
+    gsap.to(el, {
+      opacity: 1, y: 0, duration: 1, ease: 'power3.out',
+      scrollTrigger: { trigger: el, start: 'top 88%', toggleActions: 'play none none none' }
+    });
+  });
+
+  gsap.utils.toArray('.section-rule').forEach(el => {
+    gsap.to(el, {
+      opacity: 1, duration: 1.2, ease: 'power3.out',
+      scrollTrigger: { trigger: el, start: 'top 90%', toggleActions: 'play none none none' }
+    });
+  });
+
+  /* ── Staggered tile grids ───────────────────────────────── */
+  gsap.utils.toArray('.tiles-grid').forEach(grid => {
+    const tiles = grid.querySelectorAll('.tile');
+    gsap.fromTo(tiles,
+      { opacity: 0, y: 28 },
+      {
+        opacity: 1, y: 0,
+        duration: 0.75,
+        stagger: 0.08,
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: grid,
+          start: 'top 82%',
+          toggleActions: 'play none none none'
+        }
+      }
+    );
+  });
+
+  /* ── Editorial section ──────────────────────────────────── */
+  gsap.to('.editorial-statement', {
+    opacity: 1, y: 0, duration: 1.1, ease: 'power3.out',
+    scrollTrigger: { trigger: '.editorial-statement', start: 'top 82%', toggleActions: 'play none none none' }
+  });
+
+  gsap.to('.editorial-link', {
+    opacity: 1, y: 0, duration: 0.9, ease: 'power3.out',
+    scrollTrigger: { trigger: '.editorial-link', start: 'top 88%', toggleActions: 'play none none none' }
+  });
+
+  gsap.to('.editorial-body', {
+    opacity: 1, y: 0, duration: 1, ease: 'power3.out',
+    scrollTrigger: { trigger: '.editorial-body', start: 'top 82%', toggleActions: 'play none none none' }
+  });
+
+  /* ── CTA section ────────────────────────────────────────── */
+  gsap.to('.cta-label', {
+    opacity: 1, y: 0, duration: 0.8, ease: 'power3.out',
+    scrollTrigger: { trigger: '.cta', start: 'top 80%', toggleActions: 'play none none none' }
+  });
+
+  gsap.to('.cta-headline', {
+    opacity: 1, y: 0, duration: 1.1, ease: 'power3.out', delay: 0.1,
+    scrollTrigger: { trigger: '.cta', start: 'top 80%', toggleActions: 'play none none none' }
+  });
+
+  gsap.to('.cta-buttons', {
+    opacity: 1, y: 0, duration: 0.9, ease: 'power3.out', delay: 0.25,
+    scrollTrigger: { trigger: '.cta', start: 'top 80%', toggleActions: 'play none none none' }
+  });
+</script>
+</body>
+</html>
