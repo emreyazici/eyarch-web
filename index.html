@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>EYARCH — New Media Studio</title>
+  <title>EYARCH — New Media Agency</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
@@ -21,7 +21,7 @@
       --border: rgba(240,237,232,0.1);
       --gap: 3px;
       --font-display: 'Cormorant Garamond', Georgia, serif;
-      --font-body: 'Inter', 'Helvetica Neue', sans-serif;
+      --font-body: 'Inter', 'Helvetica Neue', Arial, sans-serif;
     }
 
     html { scroll-behavior: smooth; }
@@ -56,8 +56,8 @@
     }
 
     .nav-logo {
-      font-family: var(--font-display);
-      font-size: 1.3rem;
+      font-family: var(--font-body);
+      font-size: 2rem;
       font-weight: 400;
       letter-spacing: 0.25em;
       text-transform: uppercase;
@@ -69,10 +69,12 @@
       display: flex;
       gap: 42px;
       list-style: none;
+      align-items: center;
     }
 
-    .nav-links a {
-      font-size: 0.68rem;
+    .nav-links > li > a {
+      font-family: var(--font-body);
+      font-size: 1.36rem;
       font-weight: 400;
       letter-spacing: 0.18em;
       text-transform: uppercase;
@@ -80,13 +82,89 @@
       text-decoration: none;
       transition: color 0.3s;
     }
-    .nav-links a:hover { color: var(--text); }
+    .nav-links > li > a:hover { color: var(--text); }
+
+    /* ── SERVICES DROPDOWN ───────────────────────────────────── */
+    .nav-dropdown-wrapper {
+      position: relative;
+    }
+
+    .nav-dropdown-trigger {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+    }
+
+    .nav-chevron {
+      display: inline-block;
+      width: 7px;
+      height: 7px;
+      border-right: 1.5px solid currentColor;
+      border-bottom: 1.5px solid currentColor;
+      transform: rotate(45deg) translateY(-2px);
+      transition: transform 0.22s ease;
+      opacity: 0.55;
+      flex-shrink: 0;
+    }
+
+    .nav-dropdown-wrapper.open .nav-chevron {
+      transform: rotate(-135deg) translateY(2px);
+    }
+
+    .nav-dropdown {
+      position: absolute;
+      top: calc(100% + 20px);
+      right: 0;
+      min-width: 380px;
+      background: rgba(8,8,8,0.97);
+      border: 1px solid var(--border);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      list-style: none;
+      padding: 6px 0;
+      opacity: 0;
+      transform: translateY(-8px);
+      pointer-events: none;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      z-index: 300;
+    }
+
+    .nav-dropdown-wrapper.open .nav-dropdown {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .nav-dropdown li {
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-dropdown li:last-child { border-bottom: none; }
+
+    .nav-dropdown li a {
+      display: block;
+      padding: 14px 24px;
+      font-family: var(--font-body);
+      font-size: 0.62rem;
+      font-weight: 400;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      text-decoration: none;
+      transition: color 0.2s ease, background 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .nav-dropdown li a:hover {
+      color: var(--text);
+      background: rgba(240,237,232,0.04);
+    }
 
     /* ── HERO ────────────────────────────────────────────────── */
     .hero {
       position: relative;
       width: 100vw;
-      height: 100svh; /* svh: excludes mobile browser chrome */
+      height: 100svh;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -103,7 +181,6 @@
       z-index: 0;
     }
 
-    /* CSS-driven orientation swap — no JS needed */
     @media (orientation: landscape) {
       #hero-landscape { display: block; }
       #hero-portrait  { display: none;  }
@@ -114,11 +191,10 @@
       #hero-portrait  { display: block; }
     }
 
-    /* Animated fallback when no video source */
     .hero-fallback {
       position: absolute;
       inset: 0;
-      z-index: 0;
+      z-index: -1;
       background: linear-gradient(135deg, #060609 0%, #0a0c18 30%, #060812 60%, #0a070f 100%);
       background-size: 300% 300%;
       animation: heroBg 25s ease infinite alternate;
@@ -310,7 +386,7 @@
 
     .section-label {
       display: block;
-      font-size: 0.62rem;
+      font-size: 1rem;
       font-weight: 400;
       letter-spacing: 0.35em;
       text-transform: uppercase;
@@ -321,11 +397,12 @@
     }
 
     .section-title {
-      font-family: var(--font-display);
-      font-size: clamp(2.8rem, 5.5vw, 5.5rem);
+      font-family: var(--font-body);
+      font-size: clamp(2.4rem, 2.4vw, 5.5rem);
       font-weight: 300;
       letter-spacing: -0.025em;
       line-height: 0.97;
+      text-transform: uppercase;
       color: var(--text);
       margin-bottom: 22px;
       opacity: 0;
@@ -339,14 +416,6 @@
     }
 
     /* ── TILES GRID ──────────────────────────────────────────── */
-    /*
-      4-column base. Each row unit = half a column width so that:
-        square (span 2 rows) = 1:1
-        horizontal (span 2 rows, 2 cols) = 2:1
-        vertical (span 4 rows) = 1:2
-      Formula: row = (containerWidth - 3 gaps) / 4 cols / 2
-             = (100vw - 120px padding - 3×3px gap) / 8
-    */
     .tiles-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -375,7 +444,14 @@
       transition: transform 0.7s cubic-bezier(0.16,1,0.3,1), filter 0.5s;
     }
 
-    /* Unique cinematic placeholder gradients */
+    .tile-video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
     .c1 .tile-bg { background: linear-gradient(145deg,#06060e 0%,#0d0b1a 50%,#060a12 100%); animation: p1 14s ease infinite alternate; }
     .c2 .tile-bg { background: linear-gradient(220deg,#080608 0%,#0f0812 50%,#060408 100%); animation: p2 17s ease infinite alternate; }
     .c3 .tile-bg { background: linear-gradient(60deg, #040808 0%,#081410 50%,#060c0a 100%); animation: p3 12s ease infinite alternate; }
@@ -394,7 +470,6 @@
     @keyframes p7 { to { filter: brightness(2.1) saturate(2.5) hue-rotate(55deg); background-position: 0% 0%; } }
     @keyframes p8 { to { filter: brightness(1.75) saturate(3) hue-rotate(-45deg); background-position: 100% 0%; } }
 
-    /* Scanline texture */
     .tile-inner::before {
       content: '';
       position: absolute;
@@ -408,7 +483,7 @@
       position: absolute;
       inset: 0;
       z-index: 2;
-      background: linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.2) 45%, transparent 70%);
+      background: linear-gradient(to top, rgba(0,0,0,1.0) 0%, rgba(0,0,0,0.4) 45%, rgba(0,0,0,0.2) 70%);
       opacity: 0;
       transition: opacity 0.4s ease;
       display: flex;
@@ -724,24 +799,16 @@
 
       .service-section { padding: 64px 24px; }
 
-      /*
-        2-column mobile grid.
-        Row = (100vw - 48px padding - 1 gap) / 2 cols / 2
-              = (100vw - 51px) / 4
-      */
       .tiles-grid {
         grid-template-columns: repeat(2, 1fr);
         grid-auto-rows: calc((100vw - 51px) / 4);
       }
 
-      /* Square: 1 col × 2 rows → 1:1 */
       .tile      { grid-column: span 1; grid-row: span 2; }
 
-      /* Horizontal: 2 cols × 2 rows → 2:1 */
       .tile.w2,
       .tile.w3   { grid-column: span 2; grid-row: span 2; }
 
-      /* Vertical: 1 col × 4 rows → 1:2 */
       .tile.tall { grid-column: span 1; grid-row: span 4; }
 
       .editorial {
@@ -759,6 +826,89 @@
     @media (max-width: 480px) {
       .cta-buttons { flex-direction: column; align-items: center; }
     }
+    /* ── VIDEO MODAL ─────────────────────────────────────── */
+    [data-fullvideo] { cursor: pointer; }
+
+    .video-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: rgba(0,0,0,0.85);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.25s ease;
+      pointer-events: none;
+    }
+
+    .video-modal-backdrop.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .video-modal {
+      position: relative;
+      max-height: 90vh;
+      max-width: 90vw;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .video-modal video {
+      display: block;
+      max-height: 90vh;
+      max-width: 90vw;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+    }
+
+    .video-modal-close {
+      position: absolute;
+      top: -36px;
+      right: 0;
+      background: none;
+      border: none;
+      color: var(--text);
+      font-size: 1.1rem;
+      line-height: 1;
+      cursor: pointer;
+      padding: 4px 8px;
+      opacity: 0.65;
+      transition: opacity 0.2s;
+    }
+    .video-modal-close:hover { opacity: 1; }
+
+    .video-modal-play-icon {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 72px;
+      height: 72px;
+      background: rgba(255,255,255,0.16);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .video-modal-play-icon.visible { opacity: 1; }
+    .video-modal-play-icon::after {
+      content: '';
+      display: block;
+      width: 0;
+      height: 0;
+      border-style: solid;
+      border-width: 13px 0 13px 22px;
+      border-color: transparent transparent transparent rgba(255,255,255,0.9);
+      margin-left: 6px;
+    }
+
   </style>
 </head>
 <body>
@@ -767,8 +917,20 @@
 <nav id="nav">
   <a href="#" class="nav-logo">Eyarch</a>
   <ul class="nav-links">
-    <li><a href="#work">Work</a></li>
-    <li><a href="#services">Services</a></li>
+    <li><a href="#video-production">Work</a></li>
+    <li class="nav-dropdown-wrapper" id="servicesDropdown">
+      <a href="#" class="nav-dropdown-trigger" id="servicesToggle">
+        Services
+        <span class="nav-chevron"></span>
+      </a>
+      <ul class="nav-dropdown">
+        <li><a href="#video-production">Video Production [AI-VFX-CGI]</a></li>
+        <li><a href="#xr-development">XR [AR\VR] &amp; Mobile App Development</a></li>
+        <li><a href="#media-arts">Media Arts</a></li>
+        <li><a href="#branding">Branding — UX\UI Design — Web Development</a></li>
+        <li><a href="#digital-marketing">Digital Marketing</a></li>
+      </ul>
+    </li>
     <li><a href="#about">About</a></li>
     <li><a href="#contact">Contact</a></li>
   </ul>
@@ -776,21 +938,19 @@
 
 <!-- ── HERO ───────────────────────────────────────────────────── -->
 <section class="hero" id="hero">
-  <!-- 16:9 — shown in landscape orientation -->
   <video id="hero-landscape" autoplay muted loop playsinline preload="auto">
-    <source src="hero-landscape.mp4" type="video/mp4">
+    <source src="https://pub-cef42f2b83c646e4827633783f25805b.r2.dev/videos/hero-landscape.mp4" type="video/mp4">
   </video>
-  <!-- 9:16 — shown in portrait orientation -->
   <video id="hero-portrait" autoplay muted loop playsinline preload="auto">
-    <source src="hero-portrait.mp4" type="video/mp4">
+    <source src="https://pub-cef42f2b83c646e4827633783f25805b.r2.dev/videos/hero-portrait.mp4" type="video/mp4">
   </video>
   <div class="hero-fallback"></div>
   <div class="hero-vignette"></div>
   <div class="hero-noise"></div>
 
   <div class="hero-content" id="heroContent">
-    <span class="hero-eyebrow">New Media Studio</span>
-    <h1 class="hero-title">Eye<em>arch</em></h1>
+    <span class="hero-eyebrow">New Media Agency</span>
+    <h1 class="hero-title">Ey<em>arch</em></h1>
     <p class="hero-tagline">Where vision meets the edge of what's possible</p>
   </div>
 
@@ -807,18 +967,17 @@
   </div>
   <div class="marquee-outer">
     <div class="marquee-track" id="marqueeTrack">
-      <!-- First set -->
-      <span class="client-item"><span class="client-name">Nike</span></span>
+      <span class="client-item"><span class="client-name">ITU</span></span>
       <span class="client-sep"></span>
-      <span class="client-item"><span class="client-name">Dior</span></span>
+      <span class="client-item"><span class="client-name">BOUN</span></span>
       <span class="client-sep"></span>
-      <span class="client-item"><span class="client-name">Apple</span></span>
+      <span class="client-item"><span class="client-name">Vodafone</span></span>
       <span class="client-sep"></span>
-      <span class="client-item"><span class="client-name">Balenciaga</span></span>
+      <span class="client-item"><span class="client-name">Saren Gold</span></span>
       <span class="client-sep"></span>
-      <span class="client-item"><span class="client-name">Spotify</span></span>
+      <span class="client-item"><span class="client-name">Degerli</span></span>
       <span class="client-sep"></span>
-      <span class="client-item"><span class="client-name">Samsung</span></span>
+      <span class="client-item"><span class="client-name">Hilton</span></span>
       <span class="client-sep"></span>
       <span class="client-item"><span class="client-name">MoMA</span></span>
       <span class="client-sep"></span>
@@ -861,33 +1020,22 @@
   </div>
 </section>
 
-<!-- ── SERVICE 01: AI VIDEO ────────────────────────────────────── -->
-<section class="service-section" id="services">
+<!-- ── 01: VIDEO PRODUCTION [AI-VFX-CGI] ───────────────────────── -->
+<section class="service-section" id="video-production">
   <div class="section-header">
     <span class="section-label">01</span>
-    <h2 class="section-title">AI Video Production</h2>
+    <h2 class="section-title">Video Production [AI-VFX-CGI]</h2>
     <div class="section-rule"></div>
   </div>
-  <div class="tiles-grid" id="work">
+  <div class="tiles-grid">
     <div class="tile w2 c1"><div class="tile-inner"><div class="tile-bg"></div><div class="tile-overlay"><span class="tile-name">Neural Visions — Loewe</span><span class="tile-meta">AI Campaign, 2024</span></div><div class="tile-border"></div></div></div>
     <div class="tile c2"><div class="tile-inner"><div class="tile-bg"></div><div class="tile-overlay"><span class="tile-name">Sora Dreams</span><span class="tile-meta">AI Film, 2024</span></div><div class="tile-border"></div></div></div>
     <div class="tile c3"><div class="tile-inner"><div class="tile-bg"></div><div class="tile-overlay"><span class="tile-name">Synthetic Light</span><span class="tile-meta">AI Short, 2023</span></div><div class="tile-border"></div></div></div>
     <div class="tile c4"><div class="tile-inner"><div class="tile-bg"></div><div class="tile-overlay"><span class="tile-name">Diffusion State</span><span class="tile-meta">Music Video, 2024</span></div><div class="tile-border"></div></div></div>
     <div class="tile w2 c5"><div class="tile-inner"><div class="tile-bg"></div><div class="tile-overlay"><span class="tile-name">Model Collapse — Acne Studios</span><span class="tile-meta">AI Campaign, 2024</span></div><div class="tile-border"></div></div></div>
     <div class="tile c6"><div class="tile-inner"><div class="tile-bg"></div><div class="tile-overlay"><span class="tile-name">Latent Space</span><span class="tile-meta">AI Installation, 2023</span></div><div class="tile-border"></div></div></div>
-  </div>
-</section>
-
-<!-- ── SERVICE 02: VFX · CGI ───────────────────────────────────── -->
-<section class="service-section">
-  <div class="section-header">
-    <span class="section-label">02</span>
-    <h2 class="section-title">VFX · CGI Video Production</h2>
-    <div class="section-rule"></div>
-  </div>
-  <div class="tiles-grid">
     <div class="tile c7"><div class="tile-inner"><div class="tile-bg"></div><div class="tile-overlay"><span class="tile-name">Fluid Dynamics — Nike</span><span class="tile-meta">VFX Campaign, 2024</span></div><div class="tile-border"></div></div></div>
-    <div class="tile tall c2"><div class="tile-inner"><div class="tile-bg"></div><div class="tile-overlay"><span class="tile-name">Crystalline</span><span class="tile-meta">CGI Film, 2024</span></div><div class="tile-border"></div></div></div>
+    <div class="tile tall c2" data-fullvideo="https://pub-cef42f2b83c646e4827633783f25805b.r2.dev/videos/DEG-VFX-07.mp4"><div class="tile-inner"><div class="tile-bg"></div><video class="tile-video" autoplay muted loop playsinline preload="auto"><source src="https://pub-cef42f2b83c646e4827633783f25805b.r2.dev/thumbnails/DEG-VFX-07-thumb-video.mp4" type="video/mp4"></video><div class="tile-overlay"><span class="tile-name">Valentine's</span><span class="tile-meta">CGI Film, 2024</span></div><div class="tile-border"></div></div></div>
     <div class="tile c3"><div class="tile-inner"><div class="tile-bg"></div><div class="tile-overlay"><span class="tile-name">Gravity Wells</span><span class="tile-meta">VFX Short, 2023</span></div><div class="tile-border"></div></div></div>
     <div class="tile c4"><div class="tile-inner"><div class="tile-bg"></div><div class="tile-overlay"><span class="tile-name">Chrome Bodies</span><span class="tile-meta">CGI, 2024</span></div><div class="tile-border"></div></div></div>
     <div class="tile w2 c8"><div class="tile-inner"><div class="tile-bg"></div><div class="tile-overlay"><span class="tile-name">Phantom Matter — Samsung</span><span class="tile-meta">CGI Campaign, 2024</span></div><div class="tile-border"></div></div></div>
@@ -896,11 +1044,11 @@
   </div>
 </section>
 
-<!-- ── SERVICE 03: XR ──────────────────────────────────────────── -->
-<section class="service-section">
+<!-- ── 02: XR [AR\VR] & MOBILE APP DEVELOPMENT ─────────────────── -->
+<section class="service-section" id="xr-development">
   <div class="section-header">
-    <span class="section-label">03</span>
-    <h2 class="section-title">XR Projects &amp; Mobile Applications</h2>
+    <span class="section-label">02</span>
+    <h2 class="section-title">XR [AR\VR] &amp; Mobile App Development</h2>
     <div class="section-rule"></div>
   </div>
   <div class="tiles-grid">
@@ -913,11 +1061,11 @@
   </div>
 </section>
 
-<!-- ── SERVICE 04: MEDIA ARTS ──────────────────────────────────── -->
-<section class="service-section">
+<!-- ── 03: MEDIA ARTS ───────────────────────────────────────────── -->
+<section class="service-section" id="media-arts">
   <div class="section-header">
-    <span class="section-label">04</span>
-    <h2 class="section-title">Media Arts · Immersive Projects</h2>
+    <span class="section-label">03</span>
+    <h2 class="section-title">Media Arts</h2>
     <div class="section-rule"></div>
   </div>
   <div class="tiles-grid">
@@ -930,11 +1078,11 @@
   </div>
 </section>
 
-<!-- ── SERVICE 05: BRANDING & UI ───────────────────────────────── -->
-<section class="service-section">
+<!-- ── 04: BRANDING — UX\UI DESIGN — WEB DEVELOPMENT ──────────── -->
+<section class="service-section" id="branding">
   <div class="section-header">
-    <span class="section-label">05</span>
-    <h2 class="section-title">Branding &amp; UI</h2>
+    <span class="section-label">04</span>
+    <h2 class="section-title">Branding — UX\UI Design — Web Development</h2>
     <div class="section-rule"></div>
   </div>
   <div class="tiles-grid">
@@ -948,7 +1096,25 @@
   </div>
 </section>
 
-<!-- ── EDITORIAL ───────────────────────────────────────────────── -->
+<!-- ── 05: DIGITAL MARKETING ────────────────────────────────────── -->
+<section class="service-section" id="digital-marketing">
+  <div class="section-header">
+    <span class="section-label">05</span>
+    <h2 class="section-title">Digital Marketing</h2>
+    <div class="section-rule"></div>
+  </div>
+  <div class="tiles-grid">
+    <div class="tile w2 c3"><div class="tile-inner"><div class="tile-bg"></div><div class="tile-overlay"><span class="tile-name">Pulse — Global Campaign</span><span class="tile-meta">Integrated Campaign, 2024</span></div><div class="tile-border"></div></div></div>
+    <div class="tile c6"><div class="tile-inner"><div class="tile-bg"></div><div class="tile-overlay"><span class="tile-name">Algorithm</span><span class="tile-meta">Social Strategy, 2024</span></div><div class="tile-border"></div></div></div>
+    <div class="tile c8"><div class="tile-inner"><div class="tile-bg"></div><div class="tile-overlay"><span class="tile-name">Signal Drop</span><span class="tile-meta">Performance Media, 2023</span></div><div class="tile-border"></div></div></div>
+    <div class="tile tall c1"><div class="tile-inner"><div class="tile-bg"></div><div class="tile-overlay"><span class="tile-name">Reach</span><span class="tile-meta">Growth Campaign, 2024</span></div><div class="tile-border"></div></div></div>
+    <div class="tile c4"><div class="tile-inner"><div class="tile-bg"></div><div class="tile-overlay"><span class="tile-name">Noise Floor</span><span class="tile-meta">Content Strategy, 2024</span></div><div class="tile-border"></div></div></div>
+    <div class="tile w2 c7"><div class="tile-inner"><div class="tile-bg"></div><div class="tile-overlay"><span class="tile-name">Orbit — Balenciaga Digital</span><span class="tile-meta">Digital Campaign, 2024</span></div><div class="tile-border"></div></div></div>
+    <div class="tile c2"><div class="tile-inner"><div class="tile-bg"></div><div class="tile-overlay"><span class="tile-name">Feedback Loop</span><span class="tile-meta">Analytics + Optimization, 2023</span></div><div class="tile-border"></div></div></div>
+  </div>
+</section>
+
+<!-- ── WHO WE ARE ───────────────────────────────────────────────── -->
 <section class="editorial" id="about">
   <div class="editorial-left">
     <h2 class="editorial-statement">
@@ -992,8 +1158,8 @@
     <div>
       <span class="footer-col-title">Navigation</span>
       <ul class="footer-nav">
-        <li><a href="#services">Services</a></li>
-        <li><a href="#work">Work</a></li>
+        <li><a href="#video-production">Services</a></li>
+        <li><a href="#video-production">Work</a></li>
         <li><a href="#about">About</a></li>
         <li><a href="#contact">Contact</a></li>
       </ul>
@@ -1015,6 +1181,15 @@
   </div>
 </footer>
 
+<!-- ── VIDEO MODAL ──────────────────────────────────────────────── -->
+<div class="video-modal-backdrop" id="videoModal" style="display:none" aria-hidden="true">
+  <div class="video-modal" id="videoModalInner">
+    <button class="video-modal-close" id="videoModalClose" aria-label="Close">✕</button>
+    <video id="videoModalPlayer" playsinline></video>
+    <div class="video-modal-play-icon" id="videoModalPlayIcon"></div>
+  </div>
+</div>
+
 <script>
   gsap.registerPlugin(ScrollTrigger);
 
@@ -1031,6 +1206,27 @@
     nav.classList.toggle('scrolled', window.scrollY > 60);
   }, { passive: true });
 
+  /* ── Services dropdown ──────────────────────────────────── */
+  const dropdownWrapper = document.getElementById('servicesDropdown');
+  const dropdownToggle  = document.getElementById('servicesToggle');
+
+  dropdownToggle.addEventListener('click', (e) => {
+    e.preventDefault();
+    dropdownWrapper.classList.toggle('open');
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!dropdownWrapper.contains(e.target)) {
+      dropdownWrapper.classList.remove('open');
+    }
+  });
+
+  dropdownWrapper.querySelectorAll('.nav-dropdown a').forEach(link => {
+    link.addEventListener('click', () => {
+      dropdownWrapper.classList.remove('open');
+    });
+  });
+
   /* ── Clients strip fade in ──────────────────────────────── */
   ScrollTrigger.create({
     trigger: '#clients',
@@ -1038,7 +1234,7 @@
     onEnter: () => gsap.to('#clients', { opacity: 1, y: 0, duration: 1, ease: 'power3.out' })
   });
 
-  /* ── Section header elements (label, title, rule) ───────── */
+  /* ── Section header elements ────────────────────────────── */
   gsap.utils.toArray('.section-label').forEach(el => {
     gsap.to(el, {
       opacity: 1, y: 0, duration: 0.8, ease: 'power3.out',
@@ -1109,6 +1305,59 @@
   gsap.to('.cta-buttons', {
     opacity: 1, y: 0, duration: 0.9, ease: 'power3.out', delay: 0.25,
     scrollTrigger: { trigger: '.cta', start: 'top 80%', toggleActions: 'play none none none' }
+  });
+
+  /* ── Video modal ─────────────────────────────────────── */
+  const vModal       = document.getElementById('videoModal');
+  const vModalInner  = document.getElementById('videoModalInner');
+  const vModalPlayer = document.getElementById('videoModalPlayer');
+  const vModalClose  = document.getElementById('videoModalClose');
+  const vPlayIcon    = document.getElementById('videoModalPlayIcon');
+
+  function openVideoModal(url) {
+    vModalPlayer.src = url;
+    vModal.style.display = 'flex';
+    vModal.offsetHeight;
+    vModal.classList.add('active');
+    vModal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+    vModalPlayer.play().catch(() => {});
+  }
+
+  function closeVideoModal() {
+    vModal.classList.remove('active');
+    vModal.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+    setTimeout(() => {
+      vModal.style.display = 'none';
+      vModalPlayer.pause();
+      vModalPlayer.src = '';
+      vPlayIcon.classList.remove('visible');
+    }, 200);
+  }
+
+  document.querySelectorAll('[data-fullvideo]').forEach(tile => {
+    tile.addEventListener('click', () => openVideoModal(tile.dataset.fullvideo));
+  });
+
+  vModalClose.addEventListener('click', closeVideoModal);
+
+  vModal.addEventListener('click', e => {
+    if (e.target === vModal) closeVideoModal();
+  });
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && vModal.classList.contains('active')) closeVideoModal();
+  });
+
+  vModalPlayer.addEventListener('click', () => {
+    if (vModalPlayer.paused) {
+      vModalPlayer.play().catch(() => {});
+      vPlayIcon.classList.remove('visible');
+    } else {
+      vModalPlayer.pause();
+      vPlayIcon.classList.add('visible');
+    }
   });
 </script>
 </body>
