@@ -521,6 +521,21 @@
       transition: transform 0.4s ease 0.04s;
     }
 
+    .tile-location {
+      position: absolute;
+      top: 15px;
+      left: 18px;
+      z-index: 4;
+      font-family: var(--font-body);
+      font-size: 0.62rem;
+      font-weight: 400;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text);
+      text-shadow: 0 1px 10px rgba(0,0,0,0.85), 0 0 2px rgba(0,0,0,0.6);
+      pointer-events: none;
+    }
+
     .tile-inner:hover .tile-bg       { transform: scale(1.04); }
     .tile-inner:hover .tile-overlay  { opacity: 1; }
     .tile-inner:hover .tile-border   { border-color: rgba(240,237,232,0.25); }
@@ -1028,7 +1043,7 @@
     <div class="section-rule"></div>
   </div>
   <div class="tiles-grid">
-    <div class="tile w2 c1" data-fullvideo="https://framerusercontent.com/assets/5uPAVC9qGDxaLYkp1S05Bdabs.mp4"><div class="tile-inner"><div class="tile-bg" style="background-image:url('assets/thumbnails/callebaut.webp');background-size:cover;background-position:center;animation:none"></div><div class="tile-overlay"><span class="tile-name">Callebaut</span><span class="tile-meta">Projection Mapping, 2024</span></div><div class="tile-border"></div></div></div>
+    <div class="tile w2 c1" data-fullvideo="https://framerusercontent.com/assets/5uPAVC9qGDxaLYkp1S05Bdabs.mp4" data-location="Feriye Palace, Istanbul"><div class="tile-inner"><div class="tile-bg"></div><video class="tile-video" autoplay muted loop playsinline preload="auto"><source src="assets/thumbnails/callebaut.mp4" type="video/mp4"></video><span class="tile-location">Feriye Palace, Istanbul</span><div class="tile-overlay"><span class="tile-name">Callebaut</span></div><div class="tile-border"></div></div></div>
     <div class="tile c2"><div class="tile-inner"><div class="tile-bg"></div><div class="tile-overlay"><span class="tile-name">Sora Dreams</span><span class="tile-meta">AI Film, 2024</span></div><div class="tile-border"></div></div></div>
     <div class="tile c3"><div class="tile-inner"><div class="tile-bg"></div><div class="tile-overlay"><span class="tile-name">Synthetic Light</span><span class="tile-meta">AI Short, 2023</span></div><div class="tile-border"></div></div></div>
     <div class="tile c4"><div class="tile-inner"><div class="tile-bg"></div><div class="tile-overlay"><span class="tile-name">Diffusion State</span><span class="tile-meta">Music Video, 2024</span></div><div class="tile-border"></div></div></div>
@@ -1380,10 +1395,11 @@
     tile.addEventListener('click', () => {
       const nameEl = tile.querySelector('.tile-name');
       const metaEl = tile.querySelector('.tile-meta');
+      const meta = tile.dataset.location || (metaEl ? metaEl.textContent : '');
       openVideoModal(
         tile.dataset.fullvideo,
         nameEl ? nameEl.textContent : '',
-        metaEl ? metaEl.textContent : ''
+        meta
       );
     });
   });
