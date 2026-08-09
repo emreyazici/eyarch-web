@@ -1028,7 +1028,7 @@
     <div class="section-rule"></div>
   </div>
   <div class="tiles-grid">
-    <div class="tile w2 c1"><div class="tile-inner"><div class="tile-bg"></div><div class="tile-overlay"><span class="tile-name">Neural Visions — Loewe</span><span class="tile-meta">AI Campaign, 2024</span></div><div class="tile-border"></div></div></div>
+    <div class="tile w2 c1" data-fullvideo="https://framerusercontent.com/assets/5uPAVC9qGDxaLYkp1S05Bdabs.mp4"><div class="tile-inner"><div class="tile-bg" style="background-image:url('assets/thumbnails/callebaut.webp');background-size:cover;background-position:center;animation:none"></div><div class="tile-overlay"><span class="tile-name">Callebaut</span><span class="tile-meta">Projection Mapping, 2024</span></div><div class="tile-border"></div></div></div>
     <div class="tile c2"><div class="tile-inner"><div class="tile-bg"></div><div class="tile-overlay"><span class="tile-name">Sora Dreams</span><span class="tile-meta">AI Film, 2024</span></div><div class="tile-border"></div></div></div>
     <div class="tile c3"><div class="tile-inner"><div class="tile-bg"></div><div class="tile-overlay"><span class="tile-name">Synthetic Light</span><span class="tile-meta">AI Short, 2023</span></div><div class="tile-border"></div></div></div>
     <div class="tile c4"><div class="tile-inner"><div class="tile-bg"></div><div class="tile-overlay"><span class="tile-name">Diffusion State</span><span class="tile-meta">Music Video, 2024</span></div><div class="tile-border"></div></div></div>
@@ -1182,11 +1182,46 @@
 </footer>
 
 <!-- ── VIDEO MODAL ──────────────────────────────────────────────── -->
+<style>
+  .video-modal-info {
+    position: absolute;
+    left: 0; bottom: 0;
+    padding: 22px 26px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    z-index: 3;
+    pointer-events: none;
+    background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0) 100%);
+    width: 100%;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+  .video-modal-backdrop.active .video-modal-info { opacity: 1; }
+  .video-modal-info .vm-title {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    letter-spacing: 0.02em;
+    color: var(--text);
+  }
+  .video-modal-info .vm-meta {
+    font-family: var(--font-body);
+    font-size: 0.7rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+  .video-modal-info:empty { display: none; }
+</style>
 <div class="video-modal-backdrop" id="videoModal" style="display:none" aria-hidden="true">
   <div class="video-modal" id="videoModalInner">
     <button class="video-modal-close" id="videoModalClose" aria-label="Close">✕</button>
     <video id="videoModalPlayer" playsinline></video>
     <div class="video-modal-play-icon" id="videoModalPlayIcon"></div>
+    <div class="video-modal-info" id="videoModalInfo">
+      <span class="vm-title" id="vmTitle"></span>
+      <span class="vm-meta" id="vmMeta"></span>
+    </div>
   </div>
 </div>
 
@@ -1314,8 +1349,13 @@
   const vModalClose  = document.getElementById('videoModalClose');
   const vPlayIcon    = document.getElementById('videoModalPlayIcon');
 
-  function openVideoModal(url) {
+  const vmTitle = document.getElementById('vmTitle');
+  const vmMeta  = document.getElementById('vmMeta');
+
+  function openVideoModal(url, title = '', meta = '') {
     vModalPlayer.src = url;
+    vmTitle.textContent = title;
+    vmMeta.textContent = meta;
     vModal.style.display = 'flex';
     vModal.offsetHeight;
     vModal.classList.add('active');
@@ -1337,7 +1377,15 @@
   }
 
   document.querySelectorAll('[data-fullvideo]').forEach(tile => {
-    tile.addEventListener('click', () => openVideoModal(tile.dataset.fullvideo));
+    tile.addEventListener('click', () => {
+      const nameEl = tile.querySelector('.tile-name');
+      const metaEl = tile.querySelector('.tile-meta');
+      openVideoModal(
+        tile.dataset.fullvideo,
+        nameEl ? nameEl.textContent : '',
+        metaEl ? metaEl.textContent : ''
+      );
+    });
   });
 
   vModalClose.addEventListener('click', closeVideoModal);
