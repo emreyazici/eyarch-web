@@ -77,8 +77,12 @@
       align-items: center;
       justify-content: space-between;
       padding: 28px 60px;
-      transition: background 0.5s, backdrop-filter 0.5s, border-color 0.5s;
+      transition: background 0.5s, backdrop-filter 0.5s, border-color 0.5s, transform 0.4s ease;
       border-bottom: 1px solid transparent;
+    }
+
+    nav.nav-hidden {
+      transform: translateY(-100%);
     }
 
     nav.scrolled {
@@ -431,7 +435,7 @@
 
     .section-title {
       font-family: var(--font-body);
-      font-size: clamp(2.4rem, 2.4vw, 5.5rem);
+      font-size: clamp(1.2rem, 1.2vw, 2.75rem);
       font-weight: 300;
       letter-spacing: -0.025em;
       line-height: 0.97;
@@ -619,8 +623,8 @@
       line-height: 1.06;
       letter-spacing: 0.015em;
       text-transform: uppercase;
-      color: var(--text);
-      font-weight: 500;
+      color: #c2beb8;
+      font-weight: 400;
     }
 
     .tile-inner:hover .tile-bg       { transform: scale(1.04); }
@@ -1355,8 +1359,19 @@
 
   /* ── Nav scroll state ───────────────────────────────────── */
   const nav = document.getElementById('nav');
+  let lastY = window.scrollY;
   window.addEventListener('scroll', () => {
-    nav.classList.toggle('scrolled', window.scrollY > 60);
+    const y = window.scrollY;
+    nav.classList.toggle('scrolled', y > 60);
+    const heroH = window.innerHeight;
+    if (y < heroH - 80) {
+      nav.classList.remove('nav-hidden');        // hero içindeyken hep görünür
+    } else if (y > lastY + 4) {
+      nav.classList.add('nav-hidden');           // hero'dan çıkıp aşağı → gizle
+    } else if (y < lastY - 4) {
+      nav.classList.remove('nav-hidden');        // yukarı scroll → geri getir
+    }
+    lastY = y;
   }, { passive: true });
 
   /* ── Services dropdown ──────────────────────────────────── */
