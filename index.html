@@ -10,6 +10,31 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
   <style>
+    /* ── SELF-HOSTED FONTS ───────────────────────────────────── */
+    /* Mirano Extended (Freebie, commercial-granted) — body */
+    @font-face {
+      font-family: 'Mirano';
+      src: url('assets/fonts/mirano-light.ttf') format('truetype');
+      font-weight: 300 500;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'Mirano';
+      src: url('assets/fonts/mirano-light-italic.ttf') format('truetype');
+      font-weight: 300 500;
+      font-style: italic;
+      font-display: swap;
+    }
+    /* Arck by Hugo Giffard (free, credit requested) — display */
+    @font-face {
+      font-family: 'Arck';
+      src: url('assets/fonts/arck.otf') format('opentype');
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
@@ -20,8 +45,8 @@
       --accent: #00c8ff;
       --border: rgba(240,237,232,0.1);
       --gap: 3px;
-      --font-display: 'Cormorant Garamond', Georgia, serif;
-      --font-body: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+      --font-display: 'Arck', 'Cormorant Garamond', Georgia, serif;
+      --font-body: 'Mirano', 'Inter', 'Helvetica Neue', Arial, sans-serif;
     }
 
     html { scroll-behavior: smooth; }
